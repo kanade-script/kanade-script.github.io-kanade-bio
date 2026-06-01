@@ -285,4 +285,92 @@
         });
     </script>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const video = document.getElementById('bgVideo');
+        const overlay = document.getElementById('introOverlay');
+        
+        function startVideo() {
+            if (!video) return;
+            
+            // Пробуем включить звук
+            video.muted = false;
+            video.volume = 0.5;
+            
+            video.play().then(() => {
+                console.log('✅ Видео запущено со звуком');
+            }).catch(error => {
+                console.log('❌ Автозапуск заблокирован:', error);
+                // Пробуем запустить без звука
+                video.muted = true;
+                video.play().then(() => {
+                    console.log('✅ Видео запущено без звука');
+                    // Показываем кнопку для включения звука
+                    showUnmuteButton();
+                }).catch(e => {
+                    console.log('❌ Видео не запускается совсем');
+                    showPlayButton();
+                });
+            });
+        }
+        
+        function showUnmuteButton() {
+            const btn = document.createElement('div');
+            btn.innerHTML = '🔊 Нажмите для включения звука';
+            btn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                z-index: 9999;
+                font-family: monospace;
+                font-size: 14px;
+            `;
+            btn.onclick = () => {
+                video.muted = false;
+                video.volume = 0.5;
+                btn.remove();
+            };
+            document.body.appendChild(btn);
+        }
+        
+        function showPlayButton() {
+            const btn = document.createElement('div');
+            btn.innerHTML = '▶ Нажмите для запуска видео';
+            btn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 30px;
+                cursor: pointer;
+                z-index: 9999;
+                font-family: monospace;
+                font-size: 16px;
+            `;
+            btn.onclick = () => {
+                video.play();
+                btn.remove();
+            };
+            document.body.appendChild(btn);
+        }
+        
+        // Если есть интро-оверлей — запускаем после клика
+        if (overlay) {
+            overlay.addEventListener('click', function() {
+                setTimeout(startVideo, 100);
+            });
+        } else {
+            // Если нет оверлея — пробуем сразу
+            setTimeout(startVideo, 500);
+        }
+    });
+</script>
 </html>
