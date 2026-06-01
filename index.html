@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>kanade</title>
+</head>
+<body>
+    <video class="background-video" autoplay loop playsinline id="bgVideo">
+        <source src="addons/video.mp4" type="video/mp4">
+    </video>
+
+    <div class="site">
+        <div class="container">
+            <img src="addons/photo.jpg" alt="Avatar" class="avatar" id="avatarImg">
+            
+            <div class="views" title="Views">
+                <img src="addons/view.svg" alt="Views" class="view-icon"> 0
+            </div>
+            
+            <div class="name"><span class="name-text">kanade</span></div>
+
+            <div class="social-icons">
+                <a href="https://github.com/kanade-script" class="icon-link" title="github">
+                    <img src="addons/github.svg" alt="Discord" class="social-icon">
+                </a>
+                <a href="https://steamcommunity.com/id/bukabtw/" class="icon-link" title="Steam">
+                    <img src="addons/steam.svg" alt="Steam" class="social-icon">
+                </a>
+                <a href="https://t.me/kanadedev" class="icon-link" title="Telegram">
+                    <img src="addons/telegram.svg" alt="Telegram" class="social-icon">
+                </a>
+            </div>
+            <div class="location">
+                <img src="addons/location.svg" alt="Location" class="location-icon"> earth
+            </div>
+            <div class="about">Genius, billionaire, playboy, philanthropist</div>
+        </div>
+    </div>
+
+    <div id="introOverlay">
+        <div class="intro-content">いらっしゃいませ！</div>
+        <div class="line-2"></div>
+        <div class="line-3"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // === НАСТРОЙКИ КОНТЕНТА ===
+            const CONTENT_CONFIG = {
+                // Фоновое видео (файл в папке addons)
+                backgroundVideo: 'addons/video.mp4',
+                
+                // Аватарка пользователя (файл в папке addons)
+                avatarImage: 'addons/photo.jpg',
+                
+                // Имя пользователя
+                userName: 'Kanade',
+                
+                // Текст "о себе"
+                aboutText: 'I write software, implement ideas, and share ready-made programs and projects from the inside. Nothing extra',
+                
+                // Местоположение
+                locationText: 'earth'
+            };
+            
+            // Применяем настройки
+            function applyContentConfig() {
+                // Фоновое видео
+                const bgVideo = document.getElementById('bgVideo');
+                if (bgVideo && CONTENT_CONFIG.backgroundVideo) {
+                    const source = bgVideo.querySelector('source');
+                    if (source) {
+                        source.src = CONTENT_CONFIG.backgroundVideo;
+                        bgVideo.load();
+                    }
+                }
+                
+                // Аватарка
+                const avatarImg = document.getElementById('avatarImg');
+                if (avatarImg && CONTENT_CONFIG.avatarImage) {
+                    avatarImg.src = CONTENT_CONFIG.avatarImage;
+                }
+                
+                // Имя пользователя
+                const nameEl = document.querySelector('.name-text');
+                if (nameEl && CONTENT_CONFIG.userName) {
+                    nameEl.textContent = CONTENT_CONFIG.userName;
+                }
+                
+                // Текст "о себе"
+                const aboutEl = document.querySelector('.about');
+                if (aboutEl && CONTENT_CONFIG.aboutText) {
+                    aboutEl.textContent = CONTENT_CONFIG.aboutText;
+                }
+                
+                // Местоположение
+                const locationEl = document.querySelector('.location');
+                if (locationEl && CONTENT_CONFIG.locationText) {
+                    locationEl.innerHTML = '';
+                    const icon = document.createElement('img');
+                    icon.src = 'addons/location.svg';
+                    icon.alt = 'Location';
+                    icon.className = 'location-icon';
+                    locationEl.appendChild(icon);
+                    locationEl.appendChild(document.createTextNode(' ' + CONTENT_CONFIG.locationText));
+                }
+            }
+            
+            // Применяем конфиг
+            applyContentConfig();
+            
+            const bgVideo = document.getElementById('bgVideo');
+            const introOverlay = document.getElementById('introOverlay');
+            
+            // Функция для запуска видео со звуком
+            function playVideoWithSound() {
+                if (!bgVideo) return;
+                
+                bgVideo.muted = false;
+                bgVideo.volume = 0.1; // Громкость 50% (можно изменить от 0 до 1)
+                
+                bgVideo.play().then(() => {
+                    console.log('Видео со звуком запущено');
+                }).catch(error => {
+                    console.error('Ошибка воспроизведения видео:', error);
+                    // Если автозапуск заблокирован, показываем кнопку
+                    showPlayButton();
+                });
+            }
+            
+            // Функция для показа кнопки запуска (если браузер блокирует автозапуск)
+            function showPlayButton() {
+                const existingBtn = document.querySelector('.force-play-btn');
+                if (existingBtn) return;
+                
+                const playBtn = document.createElement('div');
+                playBtn.className = 'force-play-btn';
+                playBtn.innerHTML = '▶ Нажмите для запуска видео со звуком';
+                playBtn.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(0,0,0,0.8);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 30px;
+                    cursor: pointer;
+                    z-index: 10000;
+                    font-family: 'Inter', sans-serif;
+                    font-size: 14px;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    transition: all 0.3s ease;
+                `;
+                playBtn.onmouseenter = () => playBtn.style.transform = 'scale(1.05)';
+                playBtn.onmouseleave = () => playBtn.style.transform = 'scale(1)';
+                playBtn.onclick = () => {
+                    bgVideo.muted = false;
+                    bgVideo.volume = 0.1;
+                    bgVideo.play().then(() => {
+                        playBtn.remove();
+                    }).catch(e => console.log('Всё ещё ошибка:', e));
+                };
+                document.body.appendChild(playBtn);
+            }
+            
+            function updateViewsCounter() {
+                const viewsElement = document.querySelector('.views');
+                if (!viewsElement) return;
+                
+                let views = localStorage.getItem('pageViews') || 0;
+                views = parseInt(views) + 1;
+                localStorage.setItem('pageViews', views);
+                
+                const viewIcon = viewsElement.querySelector('.view-icon');
+                viewsElement.innerHTML = '';
+                if (viewIcon) viewsElement.appendChild(viewIcon.cloneNode(true));
+                viewsElement.appendChild(document.createTextNode(' ' + views));
+            }
+
+            function initTooltips() {
+                const views = document.querySelector('.views');
+                const iconLinks = document.querySelectorAll('.icon-link');
+                
+                if (views) {
+                    let originalTitleViews = views.getAttribute('title');
+                    views.addEventListener('mouseover', () => {
+                        views.removeAttribute('title');
+                        views.setAttribute('data-custom-title', originalTitleViews);
+                    });
+                    views.addEventListener('mouseout', () => {
+                        views.setAttribute('title', originalTitleViews);
+                        views.removeAttribute('data-custom-title');
+                    });
+                }
+                
+                iconLinks.forEach(link => {
+                    let originalTitleLink = link.getAttribute('title');
+                    if (originalTitleLink) {
+                        link.addEventListener('mouseover', () => {
+                            link.removeAttribute('title');
+                            link.setAttribute('data-custom-title', originalTitleLink);
+                        });
+                        link.addEventListener('mouseout', () => {
+                            link.setAttribute('title', originalTitleLink);
+                            link.removeAttribute('data-custom-title');
+                        });
+                    }
+                });
+            }
+            
+            function init3DEffect() {
+                const container = document.querySelector('.container');
+                if (!container) return;
+                
+                container.style.transformStyle = 'preserve-3d';
+                container.style.transition = 'transform 0.2s ease-out';
+                
+                container.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    const rotateX = ((centerY - y) / centerY) * 10;
+                    
+                    container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                
+                container.addEventListener('mouseleave', () => {
+                    container.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+                });
+            }
+
+            // Анимация заголовка
+            const titleText = CONTENT_CONFIG.userName || "kanade";
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typewriterTitle() {
+                if (!isDeleting && charIndex <= titleText.length) {
+                    document.title = titleText.substring(0, charIndex) + "|";
+                    charIndex++;
+                    setTimeout(typewriterTitle, 150);
+                } else if (isDeleting && charIndex >= 0) {
+                    document.title = titleText.substring(0, charIndex) + "|";
+                    charIndex--;
+                    setTimeout(typewriterTitle, 100);
+                } else {
+                    isDeleting = !isDeleting;
+                    setTimeout(typewriterTitle, 1000);
+                }
+            }
+
+            typewriterTitle();
+            
+            // Обработка интро-оверлея
+            if (introOverlay) {
+                introOverlay.addEventListener('click', () => {
+                    introOverlay.classList.add('fade-out');
+                    // После клика по интро запускаем видео со звуком
+                    setTimeout(() => {
+                        playVideoWithSound();
+                    }, 100);
+                });
+            } else {
+                // Если нет интро, пробуем запустить видео сразу
+                setTimeout(() => {
+                    playVideoWithSound();
+                }, 100);
+            }
+            
+            console.log('Начинаем инициализацию...');
+            updateViewsCounter();
+            initTooltips();
+            init3DEffect();
+            console.log('Инициализация завершена');
+        });
+    </script>
+</body>
+</html>
